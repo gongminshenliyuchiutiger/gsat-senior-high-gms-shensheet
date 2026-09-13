@@ -1,0 +1,127 @@
+/* ==========================================================================
+   吉祥物 (LiyuChillGuy) 樣式庫
+   特色：網頁左下角停駐、自由拖曳移動至全螢幕任何角落、懸停霓虹彩色發光與抖動動畫
+   ========================================================================== */
+
+#mascot-container {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 99999;
+  width: 110px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  transition: transform 0.15s ease-out;
+}
+
+:fullscreen #mascot-container,
+:-webkit-full-screen #mascot-container {
+  z-index: 99999 !important;
+  display: block !important;
+}
+
+#mascot-container.is-dragging {
+  cursor: grabbing;
+  transition: none; /* 拖曳時取消 transition 以獲得即時零延遲跟隨 */
+  transform: scale(1.08) rotate(3deg);
+}
+
+/* 吉祥物圖片 */
+.mascot-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none; /* 防止滑鼠把圖片當成原生拖曳物件 */
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+  transition: filter 0.25s ease, transform 0.25s ease;
+  transform-origin: center bottom;
+}
+
+/* 懸停效果：霓虹彩色發光 + 抖動動畫 */
+#mascot-container:hover:not(.is-dragging) .mascot-img {
+  animation: neonRainbowGlow 2s infinite linear, mascotShake 0.45s ease-in-out infinite alternate;
+}
+
+/* 霓虹彩色光暈動畫 Keyframes */
+@keyframes neonRainbowGlow {
+  0% {
+    filter: drop-shadow(0 0 10px #ff007f)
+            drop-shadow(0 0 20px #ff007f)
+            drop-shadow(0 0 35px #00f0ff);
+  }
+  25% {
+    filter: drop-shadow(0 0 12px #00f0ff)
+            drop-shadow(0 0 24px #00f0ff)
+            drop-shadow(0 0 35px #ffe600);
+  }
+  50% {
+    filter: drop-shadow(0 0 14px #ffe600)
+            drop-shadow(0 0 26px #10b981)
+            drop-shadow(0 0 38px #a855f7);
+  }
+  75% {
+    filter: drop-shadow(0 0 12px #a855f7)
+            drop-shadow(0 0 22px #ff007f)
+            drop-shadow(0 0 35px #00f0ff);
+  }
+  100% {
+    filter: drop-shadow(0 0 10px #ff007f)
+            drop-shadow(0 0 20px #ff007f)
+            drop-shadow(0 0 35px #00f0ff);
+  }
+}
+
+/* 抖動動畫 Keyframes */
+@keyframes mascotShake {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1.08);
+  }
+  20% {
+    transform: translate(-3px, 2px) rotate(-4deg) scale(1.1);
+  }
+  40% {
+    transform: translate(3px, -2px) rotate(4deg) scale(1.1);
+  }
+  60% {
+    transform: translate(-3px, -2px) rotate(-3deg) scale(1.1);
+  }
+  80% {
+    transform: translate(3px, 2px) rotate(3deg) scale(1.09);
+  }
+  100% {
+    transform: translate(-2px, 1px) rotate(-2deg) scale(1.08);
+  }
+}
+
+
+
+.mascot-drag-hint {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 行動裝置吉祥物尺寸微調 */
+@media (max-width: 768px) {
+  #mascot-container {
+    width: 85px;
+    left: 14px;
+    bottom: 14px;
+  }
+  .mascot-drag-hint {
+    display: none;
+  }
+}

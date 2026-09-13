@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>學測神理解之成為公民神不再只是夢想講義系統</title>
+
+  <!-- Google Fonts: Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6 全面使用 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- KaTeX 數學與經濟學邏輯公式渲染 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Markdown 解析函式庫 Marked -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+
+  <!-- 作答答對彩花效果 Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <!-- 系統主樣式與吉祥物樣式 -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/mascot.css" />
+</head>
+<body>
+
+  <!-- 頂部導覽控制中樞 Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      
+      <!-- 品牌標題區域 -->
+      <a href="javascript:void(0);" class="brand-section" onclick="window.GSAT_APP.loadUnit(1);">
+        <div class="brand-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-title-group">
+          <h1>學測神理解之成為公民神不再只是夢想講義系統</h1>
+        </div>
+      </a>
+
+      <!-- 導覽列功能控制組 -->
+      <div class="header-controls">
+        
+        <!-- 單元下拉選單觸發按鈕 -->
+        <div class="unit-selector-wrapper">
+          <button type="button" class="unit-select-btn" id="unit-select-btn" title="切換 18 大單元目錄">
+            <span class="unit-btn-content">
+              <i class="fa-solid fa-list-ol"></i>
+              <span id="current-unit-label" class="current-unit-label">
+                <strong class="unit-nav-main">單元 1：公民身分與權利保障</strong>
+                <span class="unit-nav-sub">（公民身分與權利、人權保障）</span>
+              </span>
+            </span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+        </div>
+
+        <!-- 模式切換按鈕組 -->
+        <div class="mode-switch-group">
+          <button type="button" class="mode-btn active" data-mode="presentation" title="簡報投影模式">
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <span>簡報模式</span>
+          </button>
+          <button type="button" class="mode-btn" data-mode="reading" title="講義深度研讀模式">
+            <i class="fa-solid fa-book-open-reader"></i>
+            <span>講義模式</span>
+          </button>
+          <button type="button" class="mode-btn" data-mode="quiz" title="學測實戰演練題庫">
+            <i class="fa-solid fa-circle-question"></i>
+            <span>考題演練</span>
+          </button>
+        </div>
+
+        <!-- 全域搜尋輸入框 -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" class="search-input" id="global-search-input" placeholder="搜尋講義核心觀念 (Ctrl+K)..." />
+        </div>
+
+        <!-- 輔助工具列 -->
+        <div class="tool-btns">
+          <button type="button" class="icon-btn" id="btn-font-plus" title="放大字體">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+          </button>
+          <button type="button" class="icon-btn" id="btn-font-minus" title="縮小字體">
+            <i class="fa-solid fa-magnifying-glass-minus"></i>
+          </button>
+          <button type="button" class="icon-btn" id="btn-toggle-theme" title="切換深色/淺色主題">
+            <i class="fa-solid fa-sun" style="color: #f59e0b;"></i>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 主內容區塊 Container -->
+  <main class="main-container">
+
+    <!-- 單元導讀與章節跳轉橫幅 -->
+    <section class="unit-banner">
+      <div class="unit-info-left">
+        <span class="unit-category-tag" id="unit-category-tag">
+          <i class="fa-solid fa-graduation-cap"></i> 社會政治篇
+        </span>
+        <h2 class="unit-title-text" id="unit-title-text">單元 1：公民身分與權利保障（公民身分與權利、人權保障）</h2>
+      </div>
+      <div class="unit-quick-nav">
+        <button type="button" class="unit-nav-btn" id="btn-prev-unit" title="上一單元">
+          <i class="fa-solid fa-arrow-left-long"></i> 上一單元
+        </button>
+        <button type="button" class="unit-nav-btn" id="btn-next-unit" title="下一單元">
+          下一單元 <i class="fa-solid fa-arrow-right-long"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- 模式一：互動式簡報投影模式 -->
+    <section class="presentation-container active" id="presentation-container">
+      <div class="slide-stage-wrapper" id="slide-stage-wrapper">
+        
+        <!-- 簡報頂部狀態條 -->
+        <div class="slide-top-bar">
+          <div class="slide-category-indicator">
+            <i class="fa-solid fa-chalkboard"></i>
+            <span>學測衝刺重點簡報投影系統</span>
+          </div>
+          <div class="slide-counter" id="slide-counter">
+            投影片 1 / 1
+          </div>
+          <div class="slide-controls-compact">
+            <!-- 劃記工具群：大屏觸控/滑鼠自由劃記 -->
+            <button type="button" class="icon-btn" id="btn-slide-pen" title="開啟/關閉大屏觸控劃記筆 (P)">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <div class="slide-pen-palette" id="slide-pen-palette" style="display: none; align-items: center; gap: 6px;">
+              <button type="button" class="pen-color-btn active" data-color="#ef4444" style="background:#ef4444;" title="紅色"></button>
+              <button type="button" class="pen-color-btn" data-color="#eab308" style="background:#eab308;" title="黃色"></button>
+              <button type="button" class="pen-color-btn" data-color="#38bdf8" style="background:#38bdf8;" title="藍色"></button>
+              <button type="button" class="pen-color-btn" data-color="#22c55e" style="background:#22c55e;" title="綠色"></button>
+              <button type="button" class="icon-btn" id="btn-slide-undo" title="復原筆劃 (Ctrl+Z)" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+              <button type="button" class="icon-btn" id="btn-slide-redo" title="重作筆劃 (Ctrl+Y)" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                <i class="fa-solid fa-rotate-right"></i>
+              </button>
+              <button type="button" class="icon-btn" id="btn-slide-clear-drawing" title="清除所有劃記" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+              <button type="button" class="icon-btn btn-close-pen-tool" id="btn-slide-close-pen" title="關閉劃記模式 (Esc 或 點擊關閉)">
+                <i class="fa-solid fa-xmark"></i>
+                <span style="font-size: 0.78rem; margin-left: 2px;">關閉畫筆</span>
+              </button>
+            </div>
+            <button type="button" class="icon-btn" id="btn-slide-laser" title="切換虛擬雷射筆 (L)">
+              <i class="fa-solid fa-circle-dot"></i>
+            </button>
+            <button type="button" class="icon-btn" id="btn-slide-fullscreen" title="全螢幕投影簡報 (F)">
+              <i class="fa-solid fa-expand"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 簡報主要舞台內容視圖 -->
+        <div class="slide-viewport" id="slide-viewport">
+          <!-- 投影片內容將由 presentation.js 動態產生 -->
+        </div>
+
+        <!-- 觸控劃記專用透明畫布 (支援電子白板、智慧大屏與滑鼠劃記) -->
+        <canvas class="slide-drawing-canvas" id="slide-drawing-canvas"></canvas>
+
+        <!-- 虛擬雷射筆游標圓點 -->
+        <div class="laser-pointer-dot" id="laser-pointer-dot"></div>
+
+        <!-- 簡報左右兩側半透明快速切換按鈕 -->
+        <button type="button" class="btn-slide-side-nav btn-slide-prev" id="btn-prev-slide" title="上一張投影片 (← 或 PageUp)">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button type="button" class="btn-slide-side-nav btn-slide-next" id="btn-next-slide" title="下一張投影片 (→ 或 Space 或 PageDown)">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <!-- 簡報底部學習進度指示條 -->
+        <div class="slide-bottom-bar">
+          <div class="slide-progress-container" title="簡報學習進度">
+            <div class="slide-progress-bar" id="slide-progress-bar"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 簡報鍵盤操作提示條 -->
+      <div style="text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-top: 6px;">
+        <i class="fa-solid fa-keyboard"></i> 鍵盤快捷鍵：<strong>方向鍵左右 [← / →]</strong> 或 <strong>[空白鍵]</strong> 翻頁 ｜ <strong>[F]</strong> 全螢幕 ｜ <strong>[P]</strong> 劃記筆 ｜ <strong>[L]</strong> 雷射筆
+      </div>
+    </section>
+
+    <!-- 模式二：講義深度研讀模式 -->
+    <section class="reading-container" id="reading-container">
+      
+      <!-- 左側章節快速跳轉導覽列 -->
+      <aside class="reading-toc-sidebar">
+        <div class="toc-header">
+          <i class="fa-solid fa-bars-staggered"></i>
+          <span>本單元重點綱要</span>
+        </div>
+        <ul class="toc-list" id="toc-list">
+          <!-- TOC 章節清單由 app.js 動態注入 -->
+        </ul>
+      </aside>
+
+      <!-- 右側講義文章主要閱讀區塊 -->
+      <article class="reading-article-wrapper">
+        <div class="reading-content" id="reading-content">
+          <!-- 講義 Markdown 內容由 app.js 渲染 -->
+        </div>
+      </article>
+
+    </section>
+
+    <!-- 模式三：學測實戰演練題庫模式 -->
+    <section class="quiz-mode-container" id="quiz-mode-container">
+      <div class="quiz-mode-hero">
+        <div class="quiz-mode-title">
+          <i class="fa-solid fa-trophy" style="color: #f59e0b;"></i>
+          <span>學測歷屆相關題目立即演練</span>
+        </div>
+        <div class="quiz-stats-badge">
+          <div class="stat-item">
+            <i class="fa-solid fa-list-check" style="color: #38bdf8;"></i>
+            <span>本單元題數：<strong id="quiz-count-stat">0 題</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 歷屆題目列表 -->
+      <div class="quiz-mode-questions" id="quiz-mode-questions">
+        <!-- 題目由 quiz.js 動態渲染 -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 全域搜尋結果彈窗 Modal -->
+  <div class="search-modal-backdrop" id="search-modal-backdrop">
+    <div class="search-modal-dialog">
+      <div class="search-modal-header">
+        <div class="search-modal-title">
+          <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
+          <span>學測講義全局觀念檢索</span>
+        </div>
+        <button type="button" class="icon-btn" id="btn-close-search" title="關閉 (Esc)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div style="padding: 12px 20px; border-bottom: 1px solid var(--border-color);">
+        <input type="text" id="search-modal-input" class="search-input" style="width: 100%; padding: 10px 14px;" placeholder="輸入關鍵字如：機會成本、兩公約、罪刑法定、比例原則..." />
+      </div>
+      <div class="search-results-list" id="search-results-list">
+        <!-- 搜尋結果由 app.js 動態產生 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 單元 18 大目錄選單彈窗 Modal -->
+  <div class="unit-menu-modal" id="unit-menu-modal">
+    <div class="unit-menu-dialog">
+      <div class="unit-menu-header">
+        <div class="search-modal-title">
+          <i class="fa-solid fa-book-bookmark" style="color: var(--primary);"></i>
+          <span>18 大單元完整講義導覽目錄</span>
+        </div>
+        <button type="button" class="icon-btn" id="btn-close-unit-menu" title="關閉 (Esc)">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="unit-menu-content">
+        <!-- 社會與政治篇 (單元 1 ~ 6) -->
+        <div class="unit-category-block">
+          <h4>
+            <i class="fa-solid fa-landmark"></i> 社會與政治篇（單元 1～6）
+          </h4>
+          <div class="unit-items-grid" id="units-grid-social"></div>
+        </div>
+
+        <!-- 法律篇 (單元 7 ~ 12) -->
+        <div class="unit-category-block">
+          <h4>
+            <i class="fa-solid fa-scale-balanced"></i> 法律篇（單元 7～12）
+          </h4>
+          <div class="unit-items-grid" id="units-grid-law"></div>
+        </div>
+
+        <!-- 經濟篇 (單元 13 ~ 18) -->
+        <div class="unit-category-block">
+          <h4>
+            <i class="fa-solid fa-chart-line"></i> 經濟篇（單元 13～18）
+          </h4>
+          <div class="unit-items-grid" id="units-grid-econ"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 網頁左下角吉祥物 (懸停霓虹彩色發光抖動，支援全螢幕任意拖曳移動) -->
+  <div id="mascot-container" title="快樂鯉魚秋老虎！可以隨意拖動我到任何角落，雙擊返回預設位置！">
+    <img src="image/LiyuChillGuy.svg" alt="快樂鯉魚秋老虎吉祥物" class="mascot-img" draggable="false" />
+    <div class="mascot-drag-hint">
+      <i class="fa-solid fa-up-down-left-right"></i> 可自由拖曳
+    </div>
+  </div>
+
+  <!-- 頁面下方 Footer -->
+  <footer class="site-footer">
+    <!-- Copyright 上方 FB 粉絲專頁 ICON 快樂鯉魚秋老虎 -->
+    <div class="footer-fb-container">
+      <a href="https://www.facebook.com/happyliyuchilltiger/" target="_blank" rel="noopener noreferrer" class="fb-fanpage-btn" title="造訪 快樂鯉魚秋老虎 Facebook 粉絲專頁">
+        <i class="fa-brands fa-square-facebook"></i>
+        <span>快樂鯉魚秋老虎</span>
+      </a>
+    </div>
+
+    <!-- 頁面最下方版權宣告 -->
+    <div class="footer-copyright">
+      Copyright © Liyuchiutiger Gongminshen
+    </div>
+  </footer>
+
+  <!-- 腳本依序載入 -->
+  <script src="js/units-data.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/presentation.js"></script>
+  <script src="js/mascot.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
