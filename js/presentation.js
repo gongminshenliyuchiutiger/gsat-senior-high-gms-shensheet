@@ -212,7 +212,9 @@
         .replace(/^(?:<i[^>]*><\/i>\s*)+/gi, "")
         .trim();
       let formattedMd = replaceEmojisWithFontAwesome(slide.rawMarkdown);
-      let parsedMd = window.marked ? window.marked.parse(formattedMd) : formattedMd;
+      let parsedMd = window.parseMarkdownWithMath
+        ? window.parseMarkdownWithMath(formattedMd)
+        : (window.marked ? window.marked.parse(formattedMd) : formattedMd);
       html = `
         <div class="slide-card">
           <div class="slide-concept-header">

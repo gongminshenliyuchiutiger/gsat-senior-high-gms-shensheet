@@ -17,6 +17,38 @@
       .replace(/💪/g, '<i class="fa-solid fa-circle-xmark"></i>');
   }
 
+  // 安全解析 Markdown 並保護 KaTeX 數學公式（防止 Marked 剝除 \% 轉義與破壞下標底線 _）
+  function parseMarkdownWithMath(markdown) {
+    if (!markdown) return "";
+    if (!window.marked || !window.marked.parse) return markdown;
+
+    const mathBlocks = [];
+
+    // 1. 先暫存保護雙錢字號區塊數學公式 $$...$$
+    let protectedMd = markdown.replace(/\$\$([\s\S]*?)\$\$/g, (match) => {
+      const placeholder = `@@MATH_BLOCK_${mathBlocks.length}@@`;
+      mathBlocks.push({ placeholder, math: match });
+      return placeholder;
+    });
+
+    // 2. 暫存保護單錢字號行內數學公式 $...$
+    protectedMd = protectedMd.replace(/\$([^\$\n\r]+?)\$/g, (match) => {
+      const placeholder = `@@MATH_INLINE_${mathBlocks.length}@@`;
+      mathBlocks.push({ placeholder, math: match });
+      return placeholder;
+    });
+
+    // 3. 執行 marked.parse
+    let html = window.marked.parse(protectedMd);
+
+    // 4. 精確回填數學公式（必須使用 function replacer 避免 $$ 在 JS replace 中被解析為轉義符號 $）
+    mathBlocks.forEach(({ placeholder, math }) => {
+      html = html.replace(placeholder, () => math);
+    });
+
+    return html;
+  }
+
   // 解析 markdown 中包含的題目字串為結構化物件
   function parseQuizBlock(rawText) {
     if (!rawText) return null;
@@ -173,22 +205,22 @@
       `;
     }
 
-    // 格式化題幹與解析（若有 marked 支援則解析粗體、強調、表格與段落）
+    // 格式化題幹與解析（若有 marked 支援則解析粗體、強調、表格、段落，並完整保護數學公式）
     let formattedQuestion = replaceEmojisWithFontAwesome(quiz.question);
     if (window.marked && window.marked.parse) {
-      // 若包含 <details ...> 閱讀題文區塊，將其內部的 markdown（包含表格、段落、粗體）先由 marked 解析為 HTML
+      // 若包含 <details ...> 閱讀題文區塊，將其內部的 markdown（包含表格、段落、粗體）先解析為 HTML
       formattedQuestion = formattedQuestion.replace(
         /(<details[^>]*>[\s\S]*?<summary>[\s\S]*?<\/summary>)([\s\S]*?)(<\/details>)/gi,
         (match, openSummary, innerMd, closeTag) => {
-          return `${openSummary}\n<div class="reading-context-body">\n${window.marked.parse(innerMd.trim())}\n</div>\n${closeTag}\n\n`;
+          return `${openSummary}\n<div class="reading-context-body">\n${parseMarkdownWithMath(innerMd.trim())}\n</div>\n${closeTag}\n\n`;
         }
       );
-      formattedQuestion = window.marked.parse(formattedQuestion);
+      formattedQuestion = parseMarkdownWithMath(formattedQuestion);
     }
 
     let formattedExplanation = replaceEmojisWithFontAwesome(quiz.explanation);
     if (window.marked && window.marked.parse) {
-      formattedExplanation = window.marked.parse(formattedExplanation);
+      formattedExplanation = parseMarkdownWithMath(formattedExplanation);
     }
 
     return `
@@ -311,6 +343,8 @@
   window.GSAT_QUIZ = {
     parseQuizBlock: parseQuizBlock,
     renderQuizHtml: renderQuizHtml,
-    replaceEmojisWithFontAwesome: replaceEmojisWithFontAwesome
+    replaceEmojisWithFontAwesome: replaceEmojisWithFontAwesome,
+    parseMarkdownWithMath: parseMarkdownWithMath
   };
+  window.parseMarkdownWithMath = parseMarkdownWithMath;
 })();

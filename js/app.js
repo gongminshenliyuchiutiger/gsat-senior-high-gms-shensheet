@@ -231,8 +231,10 @@
     // 轉換所有 Emoji 為 Font Awesome 圖標
     replacedMd = replaceEmojisWithFontAwesome(replacedMd);
 
-    // Marked.js 解析
-    let renderedHtml = window.marked ? window.marked.parse(replacedMd) : replacedMd;
+    // Marked.js 解析（包含 KaTeX 數學公式安全保護）
+    let renderedHtml = window.parseMarkdownWithMath
+      ? window.parseMarkdownWithMath(replacedMd)
+      : (window.marked ? window.marked.parse(replacedMd) : replacedMd);
 
     // 回填題目互動卡片
     quizBlocks.forEach((q, idx) => {
