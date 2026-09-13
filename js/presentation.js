@@ -94,7 +94,7 @@
       if (!trimmed) return;
 
       // 檢查區塊中是否包含「立即演練」或「公民神演練」
-      const quizRegex = />\s*###\s*(?:<i[^>]*><\/i>\s*)?(?:📝\s*)?(?:立即演練|公民神演練)[！!]?[\s\S]*?(?=(?:\r?\n---|\r?\n##|\Z))/g;
+      const quizRegex = />\s*###\s*(?:<i[^>]*><\/i>\s*)?(?:📝\s*)?(?:立即演練|公民神演練)[！!]?[\s\S]*?(?=(?:\r?\n---|\r?\n##|$))/g;
       let cleanedSection = trimmed;
       let quizMatch;
 
@@ -678,6 +678,7 @@
   });
 
   window.GSAT_PRESENTATION = {
+    buildSlidesFromUnit: buildSlidesFromUnit,
     loadUnitSlides: loadUnitSlides,
     nextSlide: nextSlide,
     prevSlide: prevSlide,

@@ -219,7 +219,7 @@
 
     // 把立即演練或公民神演練區塊轉化為互動卡片標記
     const quizBlocks = [];
-    const quizRegex = />\s*###\s*(?:<i[^>]*><\/i>\s*)?(?:📝\s*)?(?:立即演練|公民神演練)[！!]?[\s\S]*?(?=(?:\r?\n---|\r?\n##|\Z))/g;
+    const quizRegex = />\s*###\s*(?:<i[^>]*><\/i>\s*)?(?:📝\s*)?(?:立即演練|公民神演練)[！!]?[\s\S]*?(?=(?:\r?\n---|\r?\n##|$))/g;
 
     let replacedMd = mdText.replace(quizRegex, (match) => {
       const quizObj = window.GSAT_QUIZ.parseQuizBlock(match);
@@ -301,7 +301,7 @@
 
     // 抓取當前單元中所有的立即演練或公民神演練
     const raw = unit.content;
-    const quizRegex = />\s*###\s*(?:<i[^>]*><\/i>\s*)?(?:📝\s*)?(?:立即演練|公民神演練)[！!]?[\s\S]*?(?=(?:\r?\n---|\r?\n##|\Z))/g;
+    const quizRegex = />\s*###\s*(?:<i[^>]*><\/i>\s*)?(?:📝\s*)?(?:立即演練|公民神演練)[！!]?[\s\S]*?(?=(?:\r?\n---|\r?\n##|$))/g;
     const quizzes = [];
     let match;
     while ((match = quizRegex.exec(raw)) !== null) {
@@ -328,6 +328,19 @@
     });
 
     quizModeQuestions.innerHTML = html;
+
+    // KaTeX 數學公式渲染
+    if (window.renderMathInElement) {
+      window.renderMathInElement(quizModeQuestions, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+          { left: "\\(", right: "\\)", display: false },
+          { left: "\\[", right: "\\]", display: true }
+        ],
+        throwOnError: false
+      });
+    }
   }
 
   // 渲染單元切換選單清單

@@ -24,10 +24,9 @@
     // 1. 清洗每行前綴引號 >
     const cleanLines = rawText
       .split(/\r?\n/)
-      .map(l => l.replace(/^>\s?/, "").trim())
-      .filter(l => l.length > 0);
+      .map(l => l.replace(/^>\s?/, "").trimEnd());
 
-    if (cleanLines.length === 0) return null;
+    if (!cleanLines.some(l => l.trim().length > 0)) return null;
 
     // 2. 尋找考題年份或出處標籤，例如 【112. 學測】、【107. 指考】
     const fullText = cleanLines.join("\n");
@@ -42,15 +41,25 @@
     const checkboxOptions = [];
 
     for (const line of cleanLines) {
-      // 判斷是否進入答案解析區
-      if (/【(?:參考)?答案】/i.test(line) || /^解析[：:]/i.test(line) || /【(?:公民神)?破題關鍵】/i.test(line) || /【判斷理由參考】/i.test(line)) {
+      // 若已進入答案區，後續所有內容（包含表格、勾選結果、說明與解析）全數保留至 answerLines
+      if (state === "answer") {
+        answerLines.push(line);
+        continue;
+      }
+
+      // 判斷是否進入答案解析區（支援所有答案、標準作答、破題關鍵、判斷理由、解析等標籤）
+      if (
+        /【(?:(?:參考)?答案|標準(?:作答|答案)|(?:公民神)?破題關鍵|判斷理由)/i.test(line) ||
+        /^[*•-]?\s*[*_]*解析[：:]/i.test(line) ||
+        /^[*•-]?\s*[*_]*【(?:(?:參考)?答案|標準(?:作答|答案)|(?:公民神)?破題關鍵)/i.test(line)
+      ) {
         state = "answer";
         answerLines.push(line);
         continue;
       }
 
       // 判斷是否進入 (A), (B), (C), (D), (E)
-      const optMatch = line.match(/^\(?（?([A-EＡ-Ｅ])\)?）?[\s.、:：](.*)/);
+      const optMatch = line.match(/^[*•-]?\s*\(?（?([A-EＡ-Ｅ])\)?）?[\s.、:：](.*)/);
       if (optMatch) {
         let char = optMatch[1].toUpperCase();
         if (char.charCodeAt(0) > 122) {
@@ -81,7 +90,9 @@
       } else if (state === "answer") {
         answerLines.push(line);
       } else if (optLines[state]) {
-        optLines[state].push(line);
+        if (line.trim().length > 0) {
+          optLines[state].push(line.trim());
+        }
       }
     }
 
@@ -90,19 +101,12 @@
     let answer = "";
     let explanation = "";
 
-    const ansLetterMatch = ansFullText.match(/【(?:參考)?答案】\s*\(?（?([A-E])\)?）?/i);
+    const ansLetterMatch = ansFullText.match(/【(?:參考)?答案】[*\s:：`]*\(?（?([A-E])\)?）?[`*]*/i);
     if (ansLetterMatch) {
       answer = ansLetterMatch[1].toUpperCase();
     }
 
-    const expMatch = ansFullText.match(/解析[：:]\s*([\s\S]*)/i);
-    if (expMatch) {
-      explanation = expMatch[1].trim();
-    } else {
-      explanation = ansFullText
-        .replace(/【(?:參考)?答案】\s*\(?（?[A-E]\)?）?[\s*]*/i, "")
-        .trim();
-    }
+    explanation = ansFullText.trim();
 
     // 5. 組合最終選項清單（支援 2 到 5 個選項）
     const options = [];
@@ -172,6 +176,13 @@
     // 格式化題幹與解析（若有 marked 支援則解析粗體、強調、表格與段落）
     let formattedQuestion = replaceEmojisWithFontAwesome(quiz.question);
     if (window.marked && window.marked.parse) {
+      // 若包含 <details ...> 閱讀題文區塊，將其內部的 markdown（包含表格、段落、粗體）先由 marked 解析為 HTML
+      formattedQuestion = formattedQuestion.replace(
+        /(<details[^>]*>[\s\S]*?<summary>[\s\S]*?<\/summary>)([\s\S]*?)(<\/details>)/gi,
+        (match, openSummary, innerMd, closeTag) => {
+          return `${openSummary}\n<div class="reading-context-body">\n${window.marked.parse(innerMd.trim())}\n</div>\n${closeTag}\n\n`;
+        }
+      );
       formattedQuestion = window.marked.parse(formattedQuestion);
     }
 
@@ -204,7 +215,7 @@
         </div>
         <div class="quiz-explanation-box" id="${cardId}-exp">
           <div class="explanation-title">
-            <i class="fa-solid fa-circle-check"></i> ${quiz.answer ? `【正確答案 (${quiz.answer})】` : ''}學測破題思維：
+            <i class="fa-solid fa-circle-check"></i> ${quiz.answer ? `【正確答案 (${quiz.answer})】學測破題思維：` : '【公民神標準作答與破題關鍵】'}
           </div>
           <div class="explanation-content" style="line-height: 1.8;">
             ${formattedExplanation}
